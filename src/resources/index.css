@@ -53,3 +53,49 @@ body {
     text-transform: uppercase;
     font-weight: 800;
 }
+
+#encryption-strength-description{
+    display: none;
+}
+
+#encryption-strength-container{
+    display: flex;
+    justify-content: space-evenly;
+    background-color: #ededed;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+
+#encryption-strength-container .encryption-strength-option{
+    flex: 1;
+    text-align: center;
+    padding: 10px 0px;
+    cursor: pointer;
+    color: #808080;
+}
+
+#encryption-strength-container .encryption-strength-option h4{
+    margin:0;
+    font-size: 0.9em
+}
+
+#encryption-strength-container .encryption-strength-option:hover{
+    background-color: #2D8CFF;
+    color: white;
+}
+
+#encryption-strength-container .encryption-strength-option:active{
+    background-color: #167dfa;
+}
+
+#encryption-strength-container .encryption-strength-option.selected-strength{
+    background-color: #2D8CFF;
+    color: #ededed;
+}
+
+#advanced-options-toggle{
+    cursor: pointer;
+    padding-bottom: 5px;
+    border-bottom: 1px solid grey;
+}
