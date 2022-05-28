@@ -1,0 +1,55 @@
+body {
+    margin: 0;
+    font-family: 'Roboto';
+}
+
+#heading {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid black;
+    color: #808080;
+}
+
+#heading h3 {
+    margin: 10px 20px;
+    color: black;
+}
+
+.container{
+    padding: 30px;
+    padding-bottom: 0;
+}
+
+#file-upload-area {
+    font-size: 0.9em;
+    border: 1px solid black;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#file-upload {
+    padding: 7.5px 15px;
+    background-color: black;
+    color: white;
+    font-family: 'Roboto';
+    font-size: 1em;
+    cursor: pointer;
+}
+
+#file-upload-label {
+    margin: 0 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    direction: rtl;
+}
+
+.grey-label{
+    color: #adadad;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    font-weight: 800;
+}
