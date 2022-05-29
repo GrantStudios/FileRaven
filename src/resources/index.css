@@ -58,7 +58,7 @@ body {
     display: none;
 }
 
-#encryption-strength-container{
+.select-options{
     display: flex;
     justify-content: space-evenly;
     background-color: #ededed;
@@ -67,7 +67,7 @@ body {
 }
 
 
-#encryption-strength-container .encryption-strength-option{
+.select-options .select-option{
     flex: 1;
     text-align: center;
     padding: 10px 0px;
@@ -75,27 +75,101 @@ body {
     color: #808080;
 }
 
-#encryption-strength-container .encryption-strength-option h4{
+.select-options .select-option h4{
     margin:0;
     font-size: 0.9em
 }
 
-#encryption-strength-container .encryption-strength-option:hover{
+.select-options .select-option:hover{
     background-color: #2D8CFF;
     color: white;
 }
 
-#encryption-strength-container .encryption-strength-option:active{
+.select-options .select-option:active{
     background-color: #167dfa;
 }
 
-#encryption-strength-container .encryption-strength-option.selected-strength{
+.select-options .select-option.selected-option{
     background-color: #2D8CFF;
-    color: #ededed;
+    color: #ededed !important;
 }
 
 #advanced-options-toggle{
     cursor: pointer;
-    padding-bottom: 5px;
-    border-bottom: 1px solid grey;
+    text-decoration: underline;
+    user-select: none;
+}
+#advanced-options-toggle:hover{
+    text-decoration: none;
+}
+
+#advanced-options-toggle .icon{
+    vertical-align: middle;
+    font-size: 1em;
+    font-weight: 800;
+}
+
+#advanced-options{
+    display: none;
+}
+
+#method-options .method-option{
+    display: none;
+}
+
+#method-options label{
+    user-select: none;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    color: #808080;
+}
+
+#method-options label input{
+    margin-right: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.final-action{
+    padding: 10px 15px;
+    background-color: black;
+    color: white;
+    font-family: 'Roboto';
+    cursor: pointer;
+    text-align: center;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.9em;
+}
+
+#passkey{
+    width: 100%;
+    font-size: 0.9em;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 7.5px 15px;
+    padding-right: 30px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+#passkey:focus{
+    border-color: #2D8CFF;
+}
+
+#passkey-container{
+    position: relative;
+}
+
+#passkey-visibility-toggle{
+    color:#808080;
+    color: #adadad;
+    position: absolute;
+    font-size: 1em;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
 }

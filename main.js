@@ -40,7 +40,15 @@ function promptUpload(options){
 }
 
 ipcMain.handle("prompt-file", async (e, args) => {
-    console.log(args)
     await promptUpload(args);
     return uploadedFilePath;
+})
+
+function readFile(path){
+    const data = fs.readFileSync(path);
+    return new Buffer(data).toString('base64')
+}
+
+ipcMain.handle("read-file", async (e, args) => {
+    return await readFile(args);
 })

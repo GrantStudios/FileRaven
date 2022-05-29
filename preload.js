@@ -22,14 +22,7 @@ contextBridge.exposeInMainWorld('fs', {
         return await ipcRenderer.invoke("prompt-file", options);
     },
 
-    readFile: (path) => {
-        //TODO
-        fs.readFile(path, 'utf8', (err, data) => {
-            if (err) {
-                console.error(err)
-                return
-            }
-            console.log(data)
-        })
+    readFile: async (path) => {
+        return await ipcRenderer.invoke("read-file", path);
     }
 })
