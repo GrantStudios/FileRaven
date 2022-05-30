@@ -13,6 +13,7 @@
     "electron": "^19.0.1"
   },
   "dependencies": {
-    "crypto-js": "^4.1.1"
+    "crypto-js": "^4.1.1",
+    "path": "^0.12.7"
   }
 }

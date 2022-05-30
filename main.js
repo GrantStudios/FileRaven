@@ -53,7 +53,9 @@ ipcMain.handle("read-file", async (e, args) => {
 })
 
 ipcMain.handle("prompt-save", async (e, args) => {
-    return await dialog.showSaveDialog(mainWindow)
+    return await dialog.showSaveDialog(mainWindow, {
+        defaultPath: getNameFromPath(uploadedFilePath[0]) + '.piec'
+    })
 })
 
 ipcMain.handle("save-file", async (e, args) => {
@@ -70,3 +72,8 @@ process.on('uncaughtException', function (error) {
     dialog.showErrorBox('An error has occured',
         `An error occured. PieCryptor may no longer function properly. Restarting it is recommended.\n\nTo report this error, send this data to the developer:` + JSON.stringify(error))
 })
+
+function getNameFromPath(p){
+    const extension = path.extname(p)
+    return path.basename(p, extension)
+}

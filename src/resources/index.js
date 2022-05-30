@@ -34,22 +34,28 @@ function generateConfigurationData(){
             encryptionMode: $('#advanced-option-encryption-mode').val()
         },
         overwriteOriginalFile: $('#overwrite-original-file').prop('checked'),
-        includeEncryptionMetadata: $('#include-original-file').prop('checked'),
+        includeEncryptionMetadata: $('#include-encryption-metadata').prop('checked'),
     }
     if(!advancedOptions.is(":visible")){
         const userOptions = toReturn.advancedUserOptions;
-        userOptions.algorithm = $('#encryption-strength .selected-option h4').text().trim();
-        userOptions.encryptionRounds = encryptionStrengthConfigs[userOptions.algorithm].rounds;
-        userOptions.mode = encryptionStrengthConfigs[userOptions.algorithm].mode
+        const encryptionStrengthConfig = encryptionStrengthConfigs[$('#encryption-strength .selected-option h4').text().trim()]
+        userOptions.algorithm = encryptionStrengthConfig.algorithm
+        userOptions.encryptionRounds = encryptionStrengthConfig.rounds;
+        userOptions.mode = encryptionStrengthConfig.mode
     }
-    console.log(toReturn)
     return toReturn;
+}
+
+function generateFileMetadata(configurationData){
+    const userOptions = configurationData.advancedUserOptions
+    return `/* Data encrypted using PieCryptor - DO NOT DELETE THE BELOW LINE */\nALG,ROUNDS,MODE|${userOptions.algorithm},${userOptions.encryptionRounds},${userOptions.encryptionMode}`
 }
 
 const encryptionStrengthConfigs = {
     "WEAK": {
         color: "rgb(187, 80, 80)",
         description: "Weak: Quick encryption/decryption for less important documents",
+        algorithm: "AES",
         mode: "CBC",
         rounds: 10
     },
@@ -57,12 +63,14 @@ const encryptionStrengthConfigs = {
     {
         color: "rgb(162, 165, 42)",
         description: "Medium: Recommended encryption/decryption for normal documents",
+        algorithm: "AES",
         mode: "CBC",
         rounds: 25
     },
     "HIGH": {
         color: "rgb(80, 187, 80)",
         description: "High: Strong encryption/decryption for important documents",
+        algorithm: "AES",
         mode: "CBC",
         rounds: 50
     }
@@ -150,6 +158,9 @@ $('#action-encrypt').on('click', function () {
 })
 
 function writeToFile(path, data, configurationData) {
+    if(configurationData.includeEncryptionMetadata){
+        data = generateFileMetadata(configurationData) + '\n' + data;
+    }
     window.fs.saveFile({
         path: path,
         data: data
@@ -166,7 +177,6 @@ async function generateEncryptedResult(contents, passkey, mode, rounds) {
     let temp = contents;
     for (let i = 0; i < rounds; i++) {
         const progressPercentage = Math.floor((i + 1) / rounds * 100)
-        console.log(progressPercentage)
         progressBar.css('width', progressPercentage + '%')
         temp = window.nodeCrypto.AES.encrypt(temp, passkey, mode);
         await new Promise(resolve => setTimeout(resolve, 1));
