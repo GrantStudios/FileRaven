@@ -34,7 +34,7 @@
             </div>
         </div>
         <div style="display: flex; justify-content: space-between">
-            <p class="grey-label">STRENGTH</p>
+            <p class="grey-label">CONFIGURATION</p>
             <p id="advanced-options-toggle" class="grey-label">ADVANCED<span class="material-icons icon"
                     id="advanced-options-toggle-icon">add</span></p>
         </div>
@@ -56,7 +56,8 @@
         <div id="method-options">
             <div data-method="ENCRYPTION" class="method-option">
                 <p class="grey-label">OPTIONS</p>
-                <label><input type="checkbox"> Overwrite original file</label>
+                <label><input type="checkbox" id="override-original-file"> Overwrite original file</label>
+                <label><input type="checkbox" id="include-encryption-metadata"> Include encryption settings metadata <span class="material-icons icon">info</span></label>
                 <div class="final-action" id="action-encrypt">ENCRYPT</div>
             </div>
             <div data-method="DECRYPTION" class="method-option">
@@ -64,9 +65,16 @@
                 <div class="final-action" id="action-decrypt">DECRYPT</div>
             </div>
         </div>
-
+    </div>
+    <div id="progress-container">
+        <p id="progress-label"></p>
+        <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
     </div>
     <script src="resources/jquery-3.6.0.min.js"></script>
+    <script src="resources/popper.min.js"></script>
+    <script src="resources/tippy-bundle.umd.min.js"></script>
     <script src="resources/index.js"></script>
 </body>
 

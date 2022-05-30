@@ -1,3 +1,5 @@
+const container = $('.container')
+
 const fileUploadArea = $('#file-upload-area')
 const fileUploadButton = $('#file-upload')
 const fileUploadLabel = $('#file-upload-label')
@@ -15,20 +17,36 @@ const methodSelectOptions = $('.select-option', methodSelectContainer)
 const methodOptions = $('.method-option')
 
 const passKeyInput = $('#passkey')
+const passKeyVisibilityToggle = $('#passkey-visibility-toggle')
+
+const progressContainer = $('#progress-container')
+const progressLabel = $('#progress-label', progressContainer)
+const progressBarContainer = $('#progress-bar-container', progressContainer)
+const progressBar = $('#progress-bar', progressBarContainer)
+
+/* encryption options */
+const overrideOriginalFile = $('#override-original-file')
+const includeEncryptionMetadata = $('#override-original-file')
 
 const encryptionStrengthConfigs = {
     "WEAK": {
         color: "rgb(187, 80, 80)",
-        description: "Weak: Quick encryption/decryption for less important documents"
+        description: "Weak: Quick encryption/decryption for less important documents",
+        mode: "CBC",
+        rounds: 10
     },
     "MEDIUM":
     {
         color: "rgb(162, 165, 42)",
-        description: "Medium: Recommended encryption/decryption for normal documents"
+        description: "Medium: Recommended encryption/decryption for normal documents",
+        mode: "CBC",
+        rounds: 25
     },
     "HIGH": {
         color: "rgb(80, 187, 80)",
-        description: "High: Strong encryption/decryption for important documents"
+        description: "High: Strong encryption/decryption for important documents",
+        mode: "CBC",
+        rounds: 50
     }
 }
 
@@ -47,10 +65,10 @@ fileUploadButton.on('click', function () {
     })
 })
 
-$('.select-options').each(function(e){
+$('.select-options').each(function (e) {
     const s = $(this)
     const options = $('.select-option', s)
-    options.on('click', function(f){
+    options.on('click', function (f) {
         const option = $(f.currentTarget)
         options.removeClass('selected-option')
         option.addClass('selected-option')
@@ -63,11 +81,11 @@ encryptionStrengthOptions.on('click', function (e) {
     encryptionStrengthDescription.show().text(strengthConfig.description).css('color', strengthConfig.color)
 })
 
-methodSelectOptions.on('click', function(e){
+methodSelectOptions.on('click', function (e) {
     const s = $(e.currentTarget);
     methodOptions.hide();
     const method = s.find('h4').text().trim()
-    methodOptions.filter('[data-method="'+method+'"]').show()
+    methodOptions.filter('[data-method="' + method + '"]').show()
 })
 
 advancedOptionsToggle.on('click', function () {
@@ -79,10 +97,73 @@ advancedOptionsToggle.on('click', function () {
 
 let fileContents;
 
-$('#action-encrypt').on('click', function(){
+$('#action-encrypt').on('click', function () {
     window.fs.readFile(uploadedFilePath).then(result => {
         fileContents = result
-        let encryptedResult = window.nodeCrypto.AES.encrypt(fileContents, passKeyInput.val(), "CBC");
-        console.log(encryptedResult)
+        progressContainer.show();
+        progressBarContainer.show();
+        container.css('opacity', '0.5')
+        progressBar.css('width', '0%')
+        progressLabel.text('Encrypting...')
+        const selectedStrength = encryptionStrengthConfigs[$('#encryption-strength .selected-option h4').text().trim()]
+        let encryptedResult;
+        setTimeout(function () {
+            generateEncryptedResult(fileContents, passKeyInput.val(), selectedStrength.mode, selectedStrength.rounds).then(res => {
+                encryptedResult = res
+                if (overrideOriginalFile.prop('checked')) {
+                    writeToFile(uploadedFilePath, encryptedResult)
+                } else {
+                    window.fs.promptSave().then(result => {
+                        if (!result.canceled) {
+                            progressBarContainer.hide()
+                            progressLabel.text('Writing to file...')
+                            writeToFile(result.filePath, encryptedResult)
+                        }
+                    })
+                }
+                progressContainer.hide();
+            })
+        }, 100)
     })
+})
+
+function writeToFile(path, data) {
+    window.fs.saveFile({
+        path: path,
+        data: data
+    }).then(res => {
+        container.css('opacity', '1')
+        progressContainer.hide();
+        if (!res.success) {
+            //TODO
+        }
+    })
+}
+
+async function generateEncryptedResult(contents, passkey, mode, rounds) {
+    let temp = contents;
+    for (let i = 0; i < rounds; i++) {
+        const progressPercentage = Math.floor((i + 1) / rounds * 100)
+        console.log(progressPercentage)
+        progressBar.css('width', progressPercentage + '%')
+        temp = window.nodeCrypto.AES.encrypt(temp, passkey, mode);
+        await new Promise(resolve => setTimeout(resolve, 1));
+    }
+    return temp;
+}
+
+passKeyVisibilityToggle.on('click', function () {
+    if (passKeyInput.attr('type') == 'password') {
+        passKeyVisibilityToggle.html('visibility')
+        passKeyInput.attr('type', 'text')
+    } else {
+        passKeyVisibilityToggle.html('visibility_off')
+        passKeyInput.attr('type', 'password')
+    }
+})
+
+/* tooltips */
+
+tippy($('#include-encryption-metadata').siblings('.icon')[0], {
+    content: `Enabling this means you won't need to remember the encryption settings you used when decrypting - PieCryptor will handle it for you. Take note that this may make the file incompatible with other programs`
 })
