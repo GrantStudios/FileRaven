@@ -51,13 +51,30 @@
         </div>
         <p id="encryption-strength-description" class="grey-label" style="font-weight:500"></p>
         <div id="advanced-options">
-            Advanced Options (TODO)
+            <div class="advanced-option">
+                <label for="advanced-option-algorithm">Algorithm: </label><select id="advanced-option-algorithm" class="advanced-option-value">
+                    <option value="AES" default>AES</option>
+                </select>
+            </div>
+            <div class="advanced-option">
+                <label for="advanced-option-encryption-rounds">Encryption rounds: </label><input type="number" id="advanced-option-encryption-rounds" class="advanced-option-value" value="25" style="width:46px; border:1px solid black;">
+            </div>
+            <div class="advanced-option">
+                <label for="advanced-option-encryption-mode">Encryption mode: </label><select id="advanced-option-encryption-mode" class="advanced-option-value">
+                    <option value="CBC" default>CBC</option>
+                    <option value="ECB">ECB</option>
+                    <option value="CFB">CFB</option>
+                    <option value="OFB">OFB</option>
+                    <option value="CTR">CTR</option>
+                </select>
+            </div>
         </div>
         <div id="method-options">
             <div data-method="ENCRYPTION" class="method-option">
                 <p class="grey-label">OPTIONS</p>
-                <label><input type="checkbox" id="override-original-file"> Overwrite original file</label>
-                <label><input type="checkbox" id="include-encryption-metadata"> Include encryption settings metadata <span class="material-icons icon">info</span></label>
+                <label><input type="checkbox" id="overwrite-original-file"> Overwrite original file</label>
+                <label><input type="checkbox" id="include-encryption-metadata"> Include encryption settings metadata
+                    <span class="material-icons icon">info</span></label>
                 <div class="final-action" id="action-encrypt">ENCRYPT</div>
             </div>
             <div data-method="DECRYPTION" class="method-option">

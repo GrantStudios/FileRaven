@@ -54,10 +54,6 @@ body {
     font-weight: 800;
 }
 
-#encryption-strength-description {
-    display: none;
-}
-
 .select-options {
     display: flex;
     justify-content: space-evenly;
@@ -113,6 +109,23 @@ body {
     display: none;
 }
 
+#advanced-options .advanced-option{
+    display: table-row;
+}
+
+#advanced-options .advanced-option .advanced-option-value{
+    margin-left: 30px;
+}
+
+#advanced-options .advanced-option label, #advanced-options .advanced-option .advanced-option-value{
+    display: table-cell;
+}
+#advanced-options .advanced-option label{
+    font-size: 0.9em;
+    color: #808080;
+    padding-bottom: 10px;
+}
+
 #method-options .method-option {
     display: none;
 }
@@ -157,11 +170,14 @@ body {
     padding: 7.5px 15px;
     padding-right: 30px;
     box-sizing: border-box;
+}
+
+input{
     outline: none;
 }
 
-#passkey:focus {
-    border-color: #2D8CFF;
+input:focus {
+    border-color: #2D8CFF !important;
 }
 
 #passkey-container {
@@ -203,3 +219,4 @@ body {
     text-align: center;
     font-style: italic;
 }
+

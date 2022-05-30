@@ -25,8 +25,26 @@ const progressBarContainer = $('#progress-bar-container', progressContainer)
 const progressBar = $('#progress-bar', progressBarContainer)
 
 /* encryption options */
-const overrideOriginalFile = $('#override-original-file')
-const includeEncryptionMetadata = $('#override-original-file')
+
+function generateConfigurationData(){
+    const toReturn = {
+        advancedUserOptions:{
+            algorithm: $('#advanced-option-algorithm').val(),
+            encryptionRounds: $('#advanced-option-encryption-rounds').val(),
+            encryptionMode: $('#advanced-option-encryption-mode').val()
+        },
+        overwriteOriginalFile: $('#overwrite-original-file').prop('checked'),
+        includeEncryptionMetadata: $('#include-original-file').prop('checked'),
+    }
+    if(!advancedOptions.is(":visible")){
+        const userOptions = toReturn.advancedUserOptions;
+        userOptions.algorithm = $('#encryption-strength .selected-option h4').text().trim();
+        userOptions.encryptionRounds = encryptionStrengthConfigs[userOptions.algorithm].rounds;
+        userOptions.mode = encryptionStrengthConfigs[userOptions.algorithm].mode
+    }
+    console.log(toReturn)
+    return toReturn;
+}
 
 const encryptionStrengthConfigs = {
     "WEAK": {
@@ -90,7 +108,11 @@ methodSelectOptions.on('click', function (e) {
 
 advancedOptionsToggle.on('click', function () {
     advancedOptionsToggleIcon.text(advancedOptionsToggleIcon.html().trim() == "add" ? "remove" : "add");
-    advancedOptions.toggle();
+    if(advancedOptions.is(':visible')){
+        advancedOptions.hide();
+    }else{
+        advancedOptions.css('display', 'table')
+    }
     encryptionStrengthDescription.toggle();
     encryptionStrengthContainer.toggle();
 })
@@ -98,6 +120,7 @@ advancedOptionsToggle.on('click', function () {
 let fileContents;
 
 $('#action-encrypt').on('click', function () {
+    const configurationData = generateConfigurationData();
     window.fs.readFile(uploadedFilePath).then(result => {
         fileContents = result
         progressContainer.show();
@@ -105,19 +128,18 @@ $('#action-encrypt').on('click', function () {
         container.css('opacity', '0.5')
         progressBar.css('width', '0%')
         progressLabel.text('Encrypting...')
-        const selectedStrength = encryptionStrengthConfigs[$('#encryption-strength .selected-option h4').text().trim()]
         let encryptedResult;
         setTimeout(function () {
-            generateEncryptedResult(fileContents, passKeyInput.val(), selectedStrength.mode, selectedStrength.rounds).then(res => {
+            generateEncryptedResult(fileContents, passKeyInput.val(), configurationData.advancedUserOptions.encryptionMode, configurationData.advancedUserOptions.encryptionRounds, configurationData).then(res => {
                 encryptedResult = res
-                if (overrideOriginalFile.prop('checked')) {
+                if (configurationData.overwriteOriginalFile) {
                     writeToFile(uploadedFilePath, encryptedResult)
                 } else {
                     window.fs.promptSave().then(result => {
                         if (!result.canceled) {
                             progressBarContainer.hide()
                             progressLabel.text('Writing to file...')
-                            writeToFile(result.filePath, encryptedResult)
+                            writeToFile(result.filePath, encryptedResult, configurationData)
                         }
                     })
                 }
@@ -127,7 +149,7 @@ $('#action-encrypt').on('click', function () {
     })
 })
 
-function writeToFile(path, data) {
+function writeToFile(path, data, configurationData) {
     window.fs.saveFile({
         path: path,
         data: data
