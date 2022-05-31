@@ -1,6 +1,9 @@
 const { app, BrowserWindow, ipcMain, dialog, remote } = require('electron')
 const path = require('path')
-const fs = require("fs");
+const fs = require('fs');
+const lineReader = require('readline');
+const { promises } = require('dns');
+const { resolve } = require('path');
 let mainWindow;
 
 const createWindow = () => {
@@ -18,8 +21,6 @@ const createWindow = () => {
     mainWindow.loadFile('src/index.html')
 }
 
-
-
 app.whenReady().then(() => {
     createWindow()
 
@@ -30,6 +31,24 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
+})
+
+process.on('uncaughtException', function (error, origin) {
+    console.log('error start')
+    console.log(error.stack)
+    console.log('error end')
+    dialog.showErrorBox('An error has occured',
+        `An error occured. PieCryptor may no longer function properly. Try restarding to fix this error. Otherwise, report this error to the developer.\n\nTo report this error, send this data to the developer: ` + JSON.stringify({
+            error: {
+                name: error.name,
+                message: error.message,
+                cause: error.cause,
+                stack: error.stack.replaceAll('\n   ', ' ')
+            },
+            origin: origin
+        }
+        ))
+    process.exit(1);
 })
 
 let uploadedFilePath;
@@ -43,7 +62,7 @@ ipcMain.handle("prompt-file", async (e, args) => {
     return uploadedFilePath;
 })
 
-function readFile(path) {
+async function readFile(path) {
     const data = fs.readFileSync(path);
     return new Buffer(data).toString('base64')
 }
@@ -54,7 +73,7 @@ ipcMain.handle("read-file", async (e, args) => {
 
 ipcMain.handle("prompt-save", async (e, args) => {
     return await dialog.showSaveDialog(mainWindow, {
-        defaultPath: getNameFromPath(uploadedFilePath[0]) + '.piec'
+        defaultPath: getNameFromPath(args) + '.piec'
     })
 })
 
@@ -67,13 +86,22 @@ ipcMain.handle("save-file", async (e, args) => {
     return { success: success }
 })
 
-
-process.on('uncaughtException', function (error) {
-    dialog.showErrorBox('An error has occured',
-        `An error occured. PieCryptor may no longer function properly. Restarting it is recommended.\n\nTo report this error, send this data to the developer:` + JSON.stringify(error))
-})
-
-function getNameFromPath(p){
+function getNameFromPath(p) {
     const extension = path.extname(p)
     return path.basename(p, extension)
 }
+
+function generateFileLines(path) {
+    const lines = []
+    const interface = lineReader.createInterface({
+        input: fs.createReadStream(path)
+    })
+    interface.on('line', async function (line) {
+        lines.push(line)
+    })
+    return lines;
+}
+
+ipcMain.handle("read-file-lines", (e, path) => {
+    return generateFileLines(path);
+})

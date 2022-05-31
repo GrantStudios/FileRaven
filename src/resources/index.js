@@ -26,17 +26,22 @@ const progressBar = $('#progress-bar', progressBarContainer)
 
 /* encryption options */
 
-function generateConfigurationData(){
+function generateConfigurationData() {
     const toReturn = {
-        advancedUserOptions:{
+        advancedUserOptions: {
             algorithm: $('#advanced-option-algorithm').val(),
             encryptionRounds: $('#advanced-option-encryption-rounds').val(),
             encryptionMode: $('#advanced-option-encryption-mode').val()
         },
-        overwriteOriginalFile: $('#overwrite-original-file').prop('checked'),
-        includeEncryptionMetadata: $('#include-encryption-metadata').prop('checked'),
+        encryptionOptions: {
+            overwriteOriginalFile: $('#overwrite-original-file').prop('checked'),
+            includeEncryptionMetadata: $('#include-encryption-metadata').prop('checked'),
+        },
+        decryptionOptions: {
+            useEncryptionMetadata: $('#use-encryption-metadata').prop('checked')
+        }
     }
-    if(!advancedOptions.is(":visible")){
+    if (!advancedOptions.is(":visible")) {
         const userOptions = toReturn.advancedUserOptions;
         const encryptionStrengthConfig = encryptionStrengthConfigs[$('#encryption-strength .selected-option h4').text().trim()]
         userOptions.algorithm = encryptionStrengthConfig.algorithm
@@ -46,7 +51,7 @@ function generateConfigurationData(){
     return toReturn;
 }
 
-function generateFileMetadata(configurationData){
+function generateFileMetadata(configurationData) {
     const userOptions = configurationData.advancedUserOptions
     return `/* Data encrypted using PieCryptor - DO NOT DELETE THE BELOW LINE */\nALG,ROUNDS,MODE|${userOptions.algorithm},${userOptions.encryptionRounds},${userOptions.encryptionMode}`
 }
@@ -116,21 +121,19 @@ methodSelectOptions.on('click', function (e) {
 
 advancedOptionsToggle.on('click', function () {
     advancedOptionsToggleIcon.text(advancedOptionsToggleIcon.html().trim() == "add" ? "remove" : "add");
-    if(advancedOptions.is(':visible')){
+    if (advancedOptions.is(':visible')) {
         advancedOptions.hide();
-    }else{
+    } else {
         advancedOptions.css('display', 'table')
     }
     encryptionStrengthDescription.toggle();
     encryptionStrengthContainer.toggle();
 })
 
-let fileContents;
-
 $('#action-encrypt').on('click', function () {
     const configurationData = generateConfigurationData();
     window.fs.readFile(uploadedFilePath).then(result => {
-        fileContents = result
+        const fileContents = result
         progressContainer.show();
         progressBarContainer.show();
         container.css('opacity', '0.5')
@@ -140,10 +143,10 @@ $('#action-encrypt').on('click', function () {
         setTimeout(function () {
             generateEncryptedResult(fileContents, passKeyInput.val(), configurationData.advancedUserOptions.encryptionMode, configurationData.advancedUserOptions.encryptionRounds, configurationData).then(res => {
                 encryptedResult = res
-                if (configurationData.overwriteOriginalFile) {
-                    writeToFile(uploadedFilePath, encryptedResult)
+                if (configurationData.encryptionOptions.overwriteOriginalFile) {
+                    writeToFile(uploadedFilePath, encryptedResult, configurationData)
                 } else {
-                    window.fs.promptSave().then(result => {
+                    window.fs.promptSave(uploadedFilePath).then(result => {
                         if (!result.canceled) {
                             progressBarContainer.hide()
                             progressLabel.text('Writing to file...')
@@ -158,7 +161,7 @@ $('#action-encrypt').on('click', function () {
 })
 
 function writeToFile(path, data, configurationData) {
-    if(configurationData.includeEncryptionMetadata){
+    if (configurationData.encryptionOptions.includeEncryptionMetadata) {
         data = generateFileMetadata(configurationData) + '\n' + data;
     }
     window.fs.saveFile({
@@ -192,6 +195,12 @@ passKeyVisibilityToggle.on('click', function () {
         passKeyVisibilityToggle.html('visibility_off')
         passKeyInput.attr('type', 'password')
     }
+})
+
+$('#action-decrypt').on('click', function(){
+    window.fs.readFileLines(uploadedFilePath).then(result => {
+        console.log(result)
+    })
 })
 
 /* tooltips */

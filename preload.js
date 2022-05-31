@@ -21,13 +21,16 @@ contextBridge.exposeInMainWorld('fs', {
     promptFile: async (options) => {
         return await ipcRenderer.invoke("prompt-file", options);
     },
-    promptSave: async () => {
-        return ipcRenderer.invoke("prompt-save");
+    promptSave: async (path) => {
+        return ipcRenderer.invoke("prompt-save", path);
     },
     readFile: async (path) => {
         return await ipcRenderer.invoke("read-file", path);
     },
-    saveFile: async(config) => {
+    saveFile: async (config) => {
         return await ipcRenderer.invoke("save-file", config);
+    },
+    readFileLines: (path) => {
+        return await ipcRenderer.invoke("read-file-lines", path)
     }
 })
