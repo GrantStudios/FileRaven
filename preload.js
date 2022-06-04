@@ -3,6 +3,7 @@ const {
     ipcRenderer,
 } = require("electron");
 
+var pjson = require('./package.json');
 const fs = require("fs");
 const CryptoJS = require('crypto-js')
 
@@ -13,7 +14,44 @@ contextBridge.exposeInMainWorld('nodeCrypto', {
         },
         decrypt: (data, passkey, mode) => {
             return CryptoJS.AES.decrypt(data, passkey, { mode: CryptoJS.mode[mode] }).toString(CryptoJS.enc.Utf8)
+        },
+        stringify(data) {
+            return data.toString(CryptoJS.enc.Utf8)
+        },
+        hexParse(data) {
+            return CryptoJS.enc.Hex.parse(data)
         }
+    },
+})
+
+contextBridge.exposeInMainWorld('util', {
+    "base64": {
+        encode: (data) => {
+            return new Buffer(data).toString('base64')
+        },
+        decode: (data) => {
+            return Buffer.from(data, 'base64').toString("binary")
+        }
+    },
+    "uint8": {
+        toString: (data) => {
+            return Buffer.from(data).toString()
+        }
+    },
+    getVersion: () => {
+        return pjson.version;
+    }
+})
+
+contextBridge.exposeInMainWorld('dialog', {
+    showMessageBox: async (options) => {
+        return await ipcRenderer.invoke("show-message-box", options)
+    },
+    showError: (title, content) => {
+        ipcRenderer.invoke("show-error", {
+            title: title,
+            content: content
+        })
     }
 })
 
@@ -30,7 +68,6 @@ contextBridge.exposeInMainWorld('fs', {
     saveFile: async (config) => {
         return await ipcRenderer.invoke("save-file", config);
     },
-    readFileLines: (path) => {
-        return await ipcRenderer.invoke("read-file-lines", path)
-    }
+
 })
+CryptoJS.enc.Base64

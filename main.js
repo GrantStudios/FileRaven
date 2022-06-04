@@ -64,7 +64,7 @@ ipcMain.handle("prompt-file", async (e, args) => {
 
 async function readFile(path) {
     const data = fs.readFileSync(path);
-    return new Buffer(data).toString('base64')
+    return data;
 }
 
 ipcMain.handle("read-file", async (e, args) => {
@@ -72,36 +72,34 @@ ipcMain.handle("read-file", async (e, args) => {
 })
 
 ipcMain.handle("prompt-save", async (e, args) => {
+    const filePathData = getFilePathData(args.path)
     return await dialog.showSaveDialog(mainWindow, {
-        defaultPath: getNameFromPath(args) + '.piec'
+        defaultPath: args.mode == "ENCRYPT" ? filePathData.name + '.piec' : filePathData.name + '_decrypted'
     })
 })
 
 ipcMain.handle("save-file", async (e, args) => {
     let success = true;
-    await fs.writeFile(args.path, args.data, (err) => {
+    let decodedData = Buffer.from(args.data, 'base64').toString("binary")
+    await fs.writeFile(args.path, decodedData, (err) => {
         success = false;
         return err;
     })
     return { success: success }
 })
 
-function getNameFromPath(p) {
+function getFilePathData(p) {
     const extension = path.extname(p)
-    return path.basename(p, extension)
+    return {
+        name: path.basename(p, extension),
+        extension: extension
+    }
 }
 
-function generateFileLines(path) {
-    const lines = []
-    const interface = lineReader.createInterface({
-        input: fs.createReadStream(path)
-    })
-    interface.on('line', async function (line) {
-        lines.push(line)
-    })
-    return lines;
-}
+ipcMain.handle("show-message-box", async (e, args) => {
+    return await dialog.showMessageBox(mainWindow, args)
+})
 
-ipcMain.handle("read-file-lines", (e, path) => {
-    return generateFileLines(path);
+ipcMain.handle("show-error", (e, args) => {
+    dialog.showErrorBox(args.title, args.content)
 })
