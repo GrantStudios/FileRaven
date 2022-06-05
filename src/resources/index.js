@@ -265,26 +265,22 @@ $('#action-decrypt').on('click', function () {
             if (configurationData.decryptionOptions.useEncryptionMetadata) {
                 window.dialog.showError('No encryption settings metadata found', 'Could not find encryption settings metadata. The file may have been corrupted.')
             } else {
-                if (encryptedData === undefined) {
-                    window.dialog.showError('No encryption data', 'Encryption metadata was found, but no encryption data was')
-                } else {
-                    const decryptedResult = generateDecryptedResult(encryptedData, passKeyInput.val(), configurationData.advancedUserOptions.encryptionMode, configurationData.advancedUserOptions.encryptionRounds)
-                    decryptedResult.then(decResult => {
-                        window.fs.promptSave({ path: uploadedFilePath, mode: "DECRYPT" }).then(result => {
-                            if (!result.canceled) {
-                                progressBarContainer.hide()
-                                progressLabel.text('Writing to file...')
-                                writeToFile(result.filePath, decResult, configurationData, true)
-                            }
-                            progressContainer.hide()
-                            container.removeClass('processing')
-                        })
-                    }).catch(err => {
-                        window.dialog.showError('An error occured during decryption', 'Could not decrypt file. This may be because the file is corrupted, or the passkey is incorrect.\n\nIf you believe this is a bug, please report this along with the following information:\n' + stringifyExceptionForDianosing(err))
+                const decryptedResult = generateDecryptedResult(encryptedData, passKeyInput.val(), configurationData.advancedUserOptions.encryptionMode, configurationData.advancedUserOptions.encryptionRounds)
+                decryptedResult.then(decResult => {
+                    window.fs.promptSave({ path: uploadedFilePath, mode: "DECRYPT" }).then(result => {
+                        if (!result.canceled) {
+                            progressBarContainer.hide()
+                            progressLabel.text('Writing to file...')
+                            writeToFile(result.filePath, decResult, configurationData, true)
+                        }
                         progressContainer.hide()
                         container.removeClass('processing')
                     })
-                }
+                }).catch(err => {
+                    window.dialog.showError('An error occured during decryption', 'Could not decrypt file. This may be because the file is corrupted, or the passkey is incorrect.\n\nIf you believe this is a bug, please report this along with the following information:\n' + stringifyExceptionForDianosing(err))
+                    progressContainer.hide()
+                    container.removeClass('processing')
+                })
             }
         } else {
             if (!configurationData.decryptionOptions.useEncryptionMetadata) {
@@ -292,23 +288,27 @@ $('#action-decrypt').on('click', function () {
                     buttons: ["Yes", "No"],
                     message: "Encryption settings metadata found. Use encryption settings metadata in file?"
                 }).then(result => {
-                    if (result.response == 0) {
-                        const decryptedResult = generateDecryptedResult(encryptedData, passKeyInput.val(), configurationData.MODE, fileContents.ROUNDS)
-                        decryptedResult.then(decResult => {
-                            window.fs.promptSave({ path: uploadedFilePath, mode: "DECRYPT" }).then(result => {
-                                if (!result.canceled) {
-                                    progressBarContainer.hide()
-                                    progressLabel.text('Writing to file...')
-                                    writeToFile(result.filePath, decResult, configurationData, true)
-                                }
+                    if (result.response == 0) { //yes
+                        if (encryptedData === undefined) {
+                            window.dialog.showError('No encryption data', 'Encryption metadata was found, but no encryption data was')
+                        } else {
+                            const decryptedResult = generateDecryptedResult(encryptedData, passKeyInput.val(), configurationData.MODE, fileContents.ROUNDS)
+                            decryptedResult.then(decResult => {
+                                window.fs.promptSave({ path: uploadedFilePath, mode: "DECRYPT" }).then(result => {
+                                    if (!result.canceled) {
+                                        progressBarContainer.hide()
+                                        progressLabel.text('Writing to file...')
+                                        writeToFile(result.filePath, decResult, configurationData, true)
+                                    }
+                                    progressContainer.hide()
+                                    container.removeClass('processing')
+                                })
+                            }).catch(err => {
+                                window.dialog.showError('An error occured during decryption', 'Could not decrypt file. This may be because the file is corrupted, or the passkey is incorrect.\n\nIf you believe this is a bug, please report this along with the following information:\n' + stringifyExceptionForDianosing(err))
                                 progressContainer.hide()
                                 container.removeClass('processing')
                             })
-                        }).catch(err => {
-                            window.dialog.showError('An error occured during decryption', 'Could not decrypt file. This may be because the file is corrupted, or the passkey is incorrect.\n\nIf you believe this is a bug, please report this along with the following information:\n' + stringifyExceptionForDianosing(err))
-                            progressContainer.hide()
-                            container.removeClass('processing')
-                        })
+                        }
                     } else {
                         const decryptedResult = generateDecryptedResult(encryptedData, passKeyInput.val(), configurationData.advancedUserOptions.encryptionMode, configurationData.advancedUserOptions.encryptionRounds)
                         decryptedResult.then(decResult => {
