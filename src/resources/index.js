@@ -133,33 +133,60 @@ advancedOptionsToggle.on('click', function () {
     encryptionStrengthContainer.toggle();
 })
 
-$('#action-encrypt').on('click', function () {
-    const configurationData = generateConfigurationData();
-    window.fs.readFile(uploadedFilePath).then(result => {
-        const fileContents = window.util.base64.encode(result)
-        progressContainer.show();
-        progressBarContainer.show();
-        container.css('opacity', '0.5')
-        progressBar.css('width', '0%')
-        progressLabel.text('Encrypting...')
-        let encryptedResult;
-        generateEncryptedResult(fileContents, passKeyInput.val(), configurationData.advancedUserOptions.encryptionMode, configurationData.advancedUserOptions.encryptionRounds, configurationData).then(res => {
-            encryptedResult = res
-            if (configurationData.encryptionOptions.overwriteOriginalFile) {
-                writeToFile(uploadedFilePath, encryptedResult, configurationData)
-            } else {
-                window.fs.promptSave({ path: uploadedFilePath, mode: "ENCRYPT" }).then(result => {
-                    if (!result.canceled) {
-                        progressBarContainer.hide()
-                        progressLabel.text('Writing to file...')
-                        writeToFile(result.filePath, encryptedResult, configurationData, false)
-                    }
-                })
+function validateAndWarnUser() {
+    if (uploadedFilePath === undefined) {
+        window.dialog.showError('No file uploaded', 'Please upload a file')
+        return false
+    } else if (passKeyInput.val().length == 0) {
+        window.dialog.showError('No passkey entered', 'Please enter a passkey')
+        return false;
+    } else if ($('#encryption-method .selected-option').length == 0) {
+        window.dialog.showError('No method selected', 'Please select a method')
+        return false
+    } else if ($('#encryption-strength .selected-option').length == 0) {
+        if (!$('#advanced-options').is(':visible')) {
+            window.dialog.showError('No configuration selected', 'Please select a configuration or use advanced options')
+            return false;
+        } else {
+            const advancedOptionsInputValues = $('#advanced-options .advanced-option-value').map(function () { return this.value }).get()
+            if (advancedOptions.some(e => e.trim().length == 0)) {
+                window.dialog.showError('Invalid advanced option value', 'The value for one of the advanced options is invalid')
+                return false;
             }
-            progressContainer.hide();
-            container.css('opacity', '1')
+        }
+    }
+    return true;
+}
+
+$('#action-encrypt').on('click', function () {
+    if (validateAndWarnUser()) {
+        const configurationData = generateConfigurationData();
+        window.fs.readFile(uploadedFilePath).then(result => {
+            const fileContents = window.util.base64.encode(result)
+            progressContainer.show();
+            progressBarContainer.show();
+            container.addClass('processing')
+            progressBar.css('width', '0%')
+            progressLabel.text('Encrypting...')
+            let encryptedResult;
+            generateEncryptedResult(fileContents, passKeyInput.val(), configurationData.advancedUserOptions.encryptionMode, configurationData.advancedUserOptions.encryptionRounds, configurationData).then(res => {
+                encryptedResult = res
+                if (configurationData.encryptionOptions.overwriteOriginalFile) {
+                    writeToFile(uploadedFilePath, encryptedResult, configurationData)
+                } else {
+                    window.fs.promptSave({ path: uploadedFilePath, mode: "ENCRYPT" }).then(result => {
+                        if (!result.canceled) {
+                            progressBarContainer.hide()
+                            progressLabel.text('Writing to file...')
+                            writeToFile(result.filePath, encryptedResult, configurationData, false)
+                        }
+                    })
+                }
+                progressContainer.hide();
+                container.removeClass('processing')
+            })
         })
-    })
+    }
 })
 
 function writeToFile(path, data, configurationData, isDecryption) {
@@ -172,7 +199,7 @@ function writeToFile(path, data, configurationData, isDecryption) {
         path: path,
         data: window.util.base64.encode(data)
     }).then(res => {
-        container.css('opacity', '1')
+        container.removeClass('processing')
         progressContainer.hide();
         if (!res.success) {
             //TODO
@@ -250,12 +277,12 @@ $('#action-decrypt').on('click', function () {
                                 writeToFile(result.filePath, decResult, configurationData, true)
                             }
                             progressContainer.hide()
-                            container.css('opacity', '1')
+                            container.removeClass('processing')
                         })
                     }).catch(err => {
                         window.dialog.showError('An error occured during decryption', 'Could not decrypt file. This may be because the file is corrupted, or the passkey is incorrect.\n\nIf you believe this is a bug, please report this along with the following information:\n' + stringifyExceptionForDianosing(err))
                         progressContainer.hide()
-                        container.css('opacity', '1')
+                        container.removeClass('processing')
                     })
                 }
             }
@@ -275,12 +302,12 @@ $('#action-decrypt').on('click', function () {
                                     writeToFile(result.filePath, decResult, configurationData, true)
                                 }
                                 progressContainer.hide()
-                                container.css('opacity', '1')
+                                container.removeClass('processing')
                             })
                         }).catch(err => {
                             window.dialog.showError('An error occured during decryption', 'Could not decrypt file. This may be because the file is corrupted, or the passkey is incorrect.\n\nIf you believe this is a bug, please report this along with the following information:\n' + stringifyExceptionForDianosing(err))
                             progressContainer.hide()
-                            container.css('opacity', '1')
+                            container.removeClass('processing')
                         })
                     } else {
                         const decryptedResult = generateDecryptedResult(encryptedData, passKeyInput.val(), configurationData.advancedUserOptions.encryptionMode, configurationData.advancedUserOptions.encryptionRounds)
@@ -292,12 +319,12 @@ $('#action-decrypt').on('click', function () {
                                     writeToFile(result.filePath, decResult, configurationData, true)
                                 }
                                 progressContainer.hide()
-                                container.css('opacity', '1')
+                                container.removeClass('processing')
                             })
                         }).catch(err => {
                             window.dialog.showError('An error occured during decryption', 'Could not decrypt file. This may be because the file is corrupted, or the passkey is incorrect.\n\nIf you believe this is a bug, please report this along with the following information:\n' + stringifyExceptionForDianosing(err))
                             progressContainer.hide()
-                            container.css('opacity', '1')
+                            container.removeClass('processing')
                         })
                     }
                 })
@@ -309,7 +336,7 @@ $('#action-decrypt').on('click', function () {
 async function generateDecryptedResult(contents, passkey, mode, rounds) {
     progressContainer.show();
     progressBarContainer.show();
-    container.css('opacity', '0.5')
+    container.addClass('processing')
     progressBar.css('width', '0%')
     progressLabel.text('Decrypting...')
     let temp = contents;

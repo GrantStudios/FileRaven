@@ -20,6 +20,11 @@ body {
     padding-bottom: 0;
 }
 
+.container.processing{
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 #file-upload-area {
     font-size: 0.9em;
     border: 1px solid black;
@@ -219,4 +224,3 @@ input:focus {
     text-align: center;
     font-style: italic;
 }
-
