@@ -15,7 +15,7 @@ const createWindow = () => {
             preload: path.join(__dirname, "preload.js"),
             // devTools: false
         },
-        // icon: __dirname + '/src/resources/images/icon.png'
+        icon: __dirname + '/src/resources/icon.png'
     })
 
     mainWindow.loadFile('src/index.html')

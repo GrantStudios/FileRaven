@@ -13,6 +13,7 @@ body {
 #heading h3 {
     margin: 10px 20px;
     color: black;
+    margin-left: 10px;
 }
 
 .container {
@@ -236,4 +237,9 @@ input:focus {
 
 #about:hover{
     text-decoration: none;
+}
+
+#logo{
+    height: 30px;
+    margin-left: 10px;
 }
