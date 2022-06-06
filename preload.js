@@ -28,7 +28,7 @@ contextBridge.exposeInMainWorld('nodeCrypto', {
 contextBridge.exposeInMainWorld('util', {
     "base64": {
         encode: (data) => {
-            return new Buffer(data).toString('base64')
+            return Buffer.from(data).toString('base64')
         },
         decode: (data) => {
             return Buffer.from(data, 'base64').toString("binary")
