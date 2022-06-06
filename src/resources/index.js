@@ -356,6 +356,10 @@ function stringifyExceptionForDianosing(err) {
     })
 }
 
+$('#about').on('click', function(){
+    window.windows.showAbout()
+})
+
 /* tooltips */
 
 tippy($('#include-encryption-metadata').siblings('.icon')[0], {

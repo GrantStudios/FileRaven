@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'">
+    <title>About FileRaven</title>
+    <link rel="stylesheet" href="resources/fonts/roboto.css" />
+    <link rel="stylesheet" href="resources/about.css" />
+    <link rel="stylesheet" href="resources/icons.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="title-area">
+            <span id="version"></span>
+            <img src="resources/images/icon/icon.png">
+            <h2>Safe, secure, reliable</h2>
+        </div>
+        <div class="description-area">
+            FileRaven is a simplistic but powerful <a href="https://github.com/GrantStudios/FileRaven"
+                data-external-link>open source</a>
+            file cryptography application.
+            <br><br>
+            FileRaven is developed by GrantStudios (<a href="https://github.com/GrantStudios"
+                data-external-link>Github</a>).
+            <br><br>
+            Copyright © 2022 FileRaven.
+            <br>
+            FileRaven is licensed under MIT license.
+        </div>
+    </div>
+    <script src="resources/jquery-3.6.0.min.js"></script>
+    <script src="resources/global.js"></script>
+    <script>
+        $('#version').text('v' + window.util.getVersion())
+    </script>
+</body>
+
+</html>

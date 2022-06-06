@@ -1,0 +1,35 @@
+html,
+body {
+    margin: 0;
+}
+
+.title-area {
+    text-align: center;
+    padding: 20px 0px;
+    background-color: black;
+}
+
+.title-area img{
+    height: 75px;
+    filter: invert(1);
+}
+
+.title-area h2{
+    color: white;
+    margin: 0;
+    margin-top: 10px;
+}
+
+.description-area{
+    margin: 20px;
+    color: grey;
+    font-size: 0.9em;
+}
+
+#version{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    color: white;
+    font-size: 0.8em;
+}

@@ -15,14 +15,39 @@ const createWindow = () => {
             preload: path.join(__dirname, "preload.js"),
             // devTools: false
         },
-        icon: __dirname + '/src/resources/icon.png'
+        icon: __dirname + '/src/resources/images/icon/icon.png'
     })
 
     mainWindow.loadFile('src/index.html')
 }
 
+let aboutPage;
+let showingAboutPage = false
+const showAboutPage = () => {
+    aboutPage = new BrowserWindow({
+        autoHideMenuBar: true,
+        width: 400,
+        height: 400,
+        focus: true,
+        resizable: false,
+        icon: __dirname + '/src/resources/images/icon/icon.png',
+        webPreferences: {
+            preload: path.join(__dirname, "preload.js"),
+            // devTools: false
+        },
+    })
+    aboutPage.loadFile('src/about.html')
+}
+
+
 app.whenReady().then(() => {
     createWindow()
+
+    mainWindow.on('close', function(){
+        if(aboutPage != undefined){
+            aboutPage.close()
+        }
+    })
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -32,6 +57,7 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
 })
+
 
 process.on('uncaughtException', function (error, origin) {
     console.log('error start')
@@ -102,4 +128,17 @@ ipcMain.handle("show-message-box", async (e, args) => {
 
 ipcMain.handle("show-error", (e, args) => {
     dialog.showErrorBox(args.title, args.content)
+})
+
+ipcMain.handle("show-about-page", (e, args) => {
+    if(!showingAboutPage){
+        showAboutPage()
+        showingAboutPage = true;
+        aboutPage.on('close', function(){
+            showingAboutPage = false;
+            aboutPage = null;
+        })
+    }else{
+        aboutPage.focus()
+    }
 })

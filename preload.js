@@ -1,6 +1,7 @@
 const {
     contextBridge,
     ipcRenderer,
+    shell
 } = require("electron");
 
 var pjson = require('./package.json');
@@ -40,6 +41,15 @@ contextBridge.exposeInMainWorld('util', {
     },
     getVersion: () => {
         return pjson.version;
+    },
+    openExternalLink : (href) => {
+        shell.openExternal(href)
+    }
+})
+
+contextBridge.exposeInMainWorld('windows', {
+    showAbout: () => {
+        ipcRenderer.invoke("show-about-page")
     }
 })
 
