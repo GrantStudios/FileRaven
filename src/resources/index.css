@@ -224,3 +224,16 @@ input:focus {
     text-align: center;
     font-style: italic;
 }
+
+#about{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.8em;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#about:hover{
+    text-decoration: none;
+}
