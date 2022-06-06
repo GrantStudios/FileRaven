@@ -56,7 +56,7 @@ function generateConfigurationData() {
 
 function generateFileMetadata(configurationData) {
     const userOptions = configurationData.advancedUserOptions
-    return `/* Data encrypted using PieCryptor - DO NOT DELETE THE BELOW LINE */\nALG,ROUNDS,MODE|${userOptions.algorithm},${userOptions.encryptionRounds},${userOptions.encryptionMode}`
+    return `/* Data encrypted using FileRaven - DO NOT DELETE THE BELOW LINE */\nALG,ROUNDS,MODE|${userOptions.algorithm},${userOptions.encryptionRounds},${userOptions.encryptionMode}`
 }
 
 const encryptionStrengthConfigs = {
@@ -359,5 +359,5 @@ function stringifyExceptionForDianosing(err) {
 /* tooltips */
 
 tippy($('#include-encryption-metadata').siblings('.icon')[0], {
-    content: `Enabling this means you won't need to remember the encryption settings you used when decrypting - PieCryptor will handle it for you. Take note that this may make the file incompatible with other programs`
+    content: `Enabling this means you won't need to remember the encryption settings you used when decrypting - FileRaven will handle it for you. Take note that this may make the file incompatible with other programs`
 })

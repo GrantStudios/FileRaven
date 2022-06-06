@@ -38,7 +38,7 @@ process.on('uncaughtException', function (error, origin) {
     console.log(error.stack)
     console.log('error end')
     dialog.showErrorBox('An error has occured',
-        `An error occured. PieCryptor may no longer function properly. Try restarding to fix this error. Otherwise, report this error to the developer.\n\nTo report this error, send this data to the developer: ` + JSON.stringify({
+        `An error occured. FileRaven may no longer function properly. Try restarding to fix this error. Otherwise, report this error to the developer.\n\nTo report this error, send this data to the developer: ` + JSON.stringify({
             error: {
                 name: error.name,
                 message: error.message,
@@ -74,7 +74,7 @@ ipcMain.handle("read-file", async (e, args) => {
 ipcMain.handle("prompt-save", async (e, args) => {
     const filePathData = getFilePathData(args.path)
     return await dialog.showSaveDialog(mainWindow, {
-        defaultPath: args.mode == "ENCRYPT" ? filePathData.name + '.piec' : filePathData.name + '_decrypted'
+        defaultPath: args.mode == "ENCRYPT" ? filePathData.name + '.fraven' : filePathData.name + '_decrypted'
     })
 })
 
