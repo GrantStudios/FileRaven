@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'">
+    <title>FileRaven</title>
+    <link rel="stylesheet" href="resources/fonts/roboto.css" />
+    <link rel="stylesheet" href="resources/loading.css" />
+</head>
+
+<body>
+   <div class="container">
+       <div>
+           <img src="resources/images/icon/icon.png">
+       </div>
+       <div>
+           <h1>Please wait...</h1>
+           <p>FileRaven is starting...</p>
+           <span id="version"></span>
+       </div>
+   </div>
+   <script>
+       version.textContent = "v" + window.util.getVersion()
+   </script>
+</body>
+
+</html>

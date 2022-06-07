@@ -11,6 +11,7 @@ const createWindow = () => {
         autoHideMenuBar: true,
         width: 800,
         height: 600,
+        show: false,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
             // devTools: false
@@ -41,14 +42,35 @@ const showAboutPage = () => {
 
 
 app.whenReady().then(() => {
-    createWindow()
-
-    mainWindow.on('close', function(){
-        if(aboutPage != undefined){
-            aboutPage.close()
-        }
+    const loadingPage = new BrowserWindow({
+        autoHideMenuBar: true,
+        width: 550,
+        height: 194,
+        show: false,
+        resizable: false,
+        frame: false,
+        icon: __dirname + '/src/resources/images/icon/icon.png',
+        webPreferences: {
+            preload: path.join(__dirname, "preload.js"),
+            // devTools: false
+        },
     })
-
+    loadingPage.loadFile('src/loading.html')
+    loadingPage.once('ready-to-show', () => {
+        loadingPage.show()
+        setTimeout(() => {
+            createWindow()
+            mainWindow.once('ready-to-show', () => {
+                loadingPage.close()
+                mainWindow.show()
+            })
+            mainWindow.on('close', function () {
+                if (aboutPage != undefined) {
+                    aboutPage.close()
+                }
+            })
+        }, 1000)
+    })
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
@@ -131,14 +153,14 @@ ipcMain.handle("show-error", (e, args) => {
 })
 
 ipcMain.handle("show-about-page", (e, args) => {
-    if(!showingAboutPage){
+    if (!showingAboutPage) {
         showAboutPage()
         showingAboutPage = true;
-        aboutPage.on('close', function(){
+        aboutPage.on('close', function () {
             showingAboutPage = false;
             aboutPage = null;
         })
-    }else{
+    } else {
         aboutPage.focus()
     }
 })
