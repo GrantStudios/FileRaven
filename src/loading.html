@@ -6,24 +6,26 @@
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'">
     <title>FileRaven</title>
-    <link rel="stylesheet" href="resources/fonts/roboto.css" />
-    <link rel="stylesheet" href="resources/loading.css" />
+    <link rel="stylesheet" href="resources/fonts/roboto.css">
+    <link rel="stylesheet" href="resources/loading.css">
 </head>
 
 <body>
-   <div class="container">
-       <div>
-           <img src="resources/images/icon/icon.png">
-       </div>
-       <div>
-           <h1>Please wait...</h1>
-           <p>FileRaven is starting...</p>
-           <span id="version"></span>
-       </div>
-   </div>
-   <script>
-       version.textContent = "v" + window.util.getVersion()
-   </script>
+    <div class="container">
+        <div>
+            <img src="resources/images/icon/icon.png">
+        </div>
+        <div>
+            <h1 style="margin: 0;">FileRaven</h1>
+            <p style="margin: 0; margin-top: 10px">Starting up...</p>
+            <span id="version">v1.0.0</span>
+        </div>
+    </div>
+    <script>
+        version.textContent = "v" + window.util.getVersion()
+    </script>
+
+
 </body>
 
 </html>

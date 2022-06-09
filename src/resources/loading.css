@@ -1,17 +1,17 @@
 body {
     margin: 0;
-    background-image: linear-gradient(126deg, #000000 40%, #FFFFFF 44%);
+    user-select: none;
 }
 
 .container {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 20px 40px;
 }
 
 .container img {
-    height: 150px;
-    filter: invert(1);
+    height: 100px;
 }
 
 #version{

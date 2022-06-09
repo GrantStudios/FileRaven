@@ -44,32 +44,30 @@ const showAboutPage = () => {
 app.whenReady().then(() => {
     const loadingPage = new BrowserWindow({
         autoHideMenuBar: true,
-        width: 550,
-        height: 194,
+        width: 380,
+        height: 144,
         show: false,
         resizable: false,
         frame: false,
         icon: __dirname + '/src/resources/images/icon/icon.png',
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
-            // devTools: false
+            devTools: false
         },
     })
     loadingPage.loadFile('src/loading.html')
     loadingPage.once('ready-to-show', () => {
         loadingPage.show()
-        setTimeout(() => {
-            createWindow()
-            mainWindow.once('ready-to-show', () => {
-                loadingPage.close()
-                mainWindow.show()
-            })
-            mainWindow.on('close', function () {
-                if (aboutPage != undefined) {
-                    aboutPage.close()
-                }
-            })
-        }, 1000)
+        createWindow()
+        mainWindow.once('ready-to-show', () => {
+            loadingPage.close()
+            mainWindow.show()
+        })
+        mainWindow.on('close', function () {
+            if (aboutPage != undefined) {
+                aboutPage.close()
+            }
+        })
     })
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
