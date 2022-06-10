@@ -3,6 +3,10 @@ body {
     margin: 0;
 }
 
+body{
+    font-family: 'Roboto'
+}
+
 .title-area {
     text-align: center;
     padding: 20px 0px;
