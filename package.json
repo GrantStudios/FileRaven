@@ -5,12 +5,50 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.grantou.apps.fileraven",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "mac": {
+      "target": ["zip"]
+    },
+    "portable": {
+      "artifactName": "FileRaven.exe"
+    }
   },
   "author": "GrantStudios <grant.studio.2021@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^19.0.1"
+    "electron": "^19.0.1",
+    "electron-builder": "^23.0.3"
   },
   "dependencies": {
     "crypto-js": "^4.1.1",
