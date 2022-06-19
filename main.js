@@ -14,7 +14,7 @@ const createWindow = () => {
         show: false,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
-            // devTools: false
+            devTools: false
         },
         icon: __dirname + '/src/resources/images/icon/icon.png'
     })
@@ -34,7 +34,7 @@ const showAboutPage = () => {
         icon: __dirname + '/src/resources/images/icon/icon.png',
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
-            // devTools: false
+            devTools: false
         },
     })
     aboutPage.loadFile('src/about.html')

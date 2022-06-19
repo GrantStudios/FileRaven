@@ -12,6 +12,8 @@ For windows users: [portable `.exe`](dist/FileRaven.exe)
 
 For MacOS & Linux users: the project must be cloned. Change the `dist` property in the `scripts` to either `electron-builder -m` (for macOS) or `electron-builder -l` (for Linux), then run `npm run dist`. The built file can be found in `/dist`.
 
+<sub>Note: You can only build for macOS on macOS</sub>
+
 ---
 
 FileRaven is licensed under the MIT License.
